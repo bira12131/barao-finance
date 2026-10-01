@@ -1,0 +1,28 @@
+{
+  "id": "./?source=pwa",
+  "name": "Barao Finance",
+  "short_name": "Barao",
+  "description": "Gestao financeira pessoal no navegador e como app instalado.",
+  "lang": "pt-BR",
+  "start_url": "./index.html?source=pwa",
+  "scope": "./",
+  "display": "fullscreen",
+  "display_override": ["fullscreen", "standalone"],
+  "orientation": "portrait",
+  "background_color": "#f2f5fb",
+  "theme_color": "#3b6fd4",
+  "icons": [
+    {
+      "src": "./assets/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}

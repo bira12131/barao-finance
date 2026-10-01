@@ -1,0 +1,2 @@
+# Bloqueia acesso HTTP direto aos arquivos de configuração
+Require all denied

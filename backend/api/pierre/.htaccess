@@ -1,0 +1,7 @@
+# Permite GET, POST, OPTIONS para os endpoints Pierre Finance
+<LimitExcept GET POST OPTIONS>
+    Require all denied
+</LimitExcept>
+
+Options -Indexes
+Require all granted

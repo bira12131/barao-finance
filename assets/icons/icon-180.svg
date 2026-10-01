@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 180 180" role="img" aria-label="Barao Finance iOS">
+  <rect width="180" height="180" rx="40" fill="#3b6fd4"/>
+  <path d="M46 122V76l44-34 44 34v46" fill="none" stroke="#ffffff" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M70 122V95h40v27" fill="none" stroke="#b9d2ff" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M33 122h114" fill="none" stroke="#ffffff" stroke-width="8" stroke-linecap="round"/>
+</svg>

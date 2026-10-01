@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Barao Finance Maskable">
+  <rect width="512" height="512" fill="#2e5fbf"/>
+  <rect x="48" y="48" width="416" height="416" rx="96" fill="#4f8ef7"/>
+  <path d="M156 340V220l100-76 100 76v120" fill="none" stroke="#ffffff" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M216 340v-68h80v68" fill="none" stroke="#c9dcff" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M124 340h264" fill="none" stroke="#ffffff" stroke-width="20" stroke-linecap="round"/>
+</svg>

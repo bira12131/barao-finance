@@ -1,0 +1,8 @@
+# Permite GET, POST, OPTIONS para todos os endpoints da API
+<LimitExcept GET POST OPTIONS>
+    Require all denied
+</LimitExcept>
+
+# Remove restrição de acesso direto (necessário em algumas configs KingHost)
+Options -Indexes
+Require all granted

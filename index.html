@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <title>Login — Barão Finance</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" type="image/svg+xml" href="assets/icons/icon.svg" />
+  <link rel="apple-touch-icon" href="assets/icons/icon-180.svg" />
+  <meta name="theme-color" content="#3b6fd4" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Barao Finance" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<div class="auth-wrapper">
+  <div class="auth-card">
+
+    <!-- Logo -->
+    <div class="auth-logo">
+      <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="48" height="48" rx="12" fill="#3f7af0"/>
+        <path d="M14 34V20l10-8 10 8v14" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M20 34v-8h8v8" stroke="#a8c4f5" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M10 34h28" stroke="#fff" stroke-width="2.5" stroke-linecap="round"/>
+      </svg>
+      <span class="auth-logo-name">Barão <span>Finance</span></span>
+    </div>
+
+    <!-- Cabeçalho -->
+    <div class="auth-form-header">
+      <h1>Entrar na conta</h1>
+      <p>Acesse para gerenciar suas finanças</p>
+    </div>
+
+    <!-- Alerta global -->
+    <div id="login-alert" class="alert alert-error" role="alert">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span class="alert-message"></span>
+    </div>
+
+    <form id="login-form" novalidate>
+
+      <!-- E-mail -->
+      <div class="form-group">
+        <label class="form-label" for="email">E-mail</label>
+        <div class="form-input-wrapper">
+          <span class="form-input-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/>
+            </svg>
+          </span>
+          <input
+            id="email"
+            type="email"
+            class="form-input"
+            placeholder="seu@email.com"
+            autocomplete="email"
+            required
+          />
+        </div>
+        <span id="email-error" class="form-error"></span>
+      </div>
+
+      <!-- Senha -->
+      <div class="form-group">
+        <label class="form-label" for="password">Senha</label>
+        <div class="form-input-wrapper">
+          <span class="form-input-icon">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+          </span>
+          <input
+            id="password"
+            type="password"
+            class="form-input"
+            placeholder="Sua senha"
+            autocomplete="current-password"
+            required
+          />
+          <button type="button" id="toggle-password" class="btn-toggle-password" aria-label="Mostrar senha">
+            <svg xmlns="http://www.w3.org/2000/svg" width="17" height="17" viewBox="0 0 24 24"
+              fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+              <circle cx="12" cy="12" r="3"/>
+            </svg>
+          </button>
+        </div>
+        <span id="password-error" class="form-error"></span>
+      </div>
+
+      <button type="submit" id="btn-login" class="btn btn-primary">
+        <span class="btn-spinner"></span>
+        <span class="btn-text">Entrar</span>
+      </button>
+
+    </form>
+
+    <div class="auth-divider">ou</div>
+
+    <p class="auth-redirect">
+      Não tem uma conta?
+      <a href="views/register.html">Criar conta</a>
+    </p>
+
+    <footer class="auth-footer">
+      &copy; 2026 Barão Finance. Todos os direitos reservados.
+    </footer>
+
+  </div>
+</div>
+
+<script src="js/pwa.js"></script>
+<script src="js/models/User.js"></script>
+<script src="js/controllers/AuthController.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', () => AuthController.initLogin());
+</script>
+</body>
+</html>

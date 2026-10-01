@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Barao Finance">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#4f8ef7"/>
+      <stop offset="1" stop-color="#2e5fbf"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" rx="128" fill="url(#bg)"/>
+  <path d="M140 336V208l116-88 116 88v128" fill="none" stroke="#ffffff" stroke-width="28" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M210 336v-74h92v74" fill="none" stroke="#b9d2ff" stroke-width="26" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M102 336h308" fill="none" stroke="#ffffff" stroke-width="24" stroke-linecap="round"/>
+</svg>
