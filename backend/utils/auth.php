@@ -53,6 +53,9 @@ function requireAuthenticatedUserId(): string
         jsonResponse(false, 'Sessão inválida.', [], 401);
     }
 
+    // Libera o lock da sessão: sem isso, requisições simultâneas ficam em fila até a anterior terminar.
+    session_write_close();
+
     return $userId;
 }
 

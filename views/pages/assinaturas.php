@@ -85,6 +85,11 @@
       color: var(--text-muted);
       margin-top: 0.18rem;
     }
+    .assinatura-id { display: flex; align-items: center; gap: 0.7rem; min-width: 0; }
+    .logo-wrap { position: relative; width: 42px; height: 42px; flex: none; }
+    .logo-fallback, .logo-img { width: 42px; height: 42px; border-radius: 12px; }
+    .logo-fallback { display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1.1rem; }
+    .logo-wrap .logo-img { position: absolute; inset: 0; object-fit: contain; background: #fff; padding: 5px; box-sizing: border-box; }
     .assinatura-valor {
       font-size: 1.05rem;
       color: var(--danger);
@@ -308,6 +313,13 @@
           <input class="modal-input" id="a-valor" type="text" inputmode="numeric" placeholder="R$ 0,00" />
         </div>
 
+        <div class="modal-field full">
+          <label class="modal-label" for="a-banco">Onde é descontado</label>
+          <select class="modal-input" id="a-banco">
+            <option value="">Não sei / outro</option>
+          </select>
+        </div>
+
       </div>
 
       <div class="modal-actions">
@@ -320,6 +332,18 @@
   </div>
 
   <script>
+    const CORES_LOGO = ['#6c5ce7', '#0984e3', '#00b894', '#e17055', '#d63031', '#e84393', '#fdcb6e', '#00cec9'];
+    function logoEmpresa(a) {
+      const nome = String(a.descricao || '?').trim();
+      const letra = (nome.charAt(0) || '?').toUpperCase().replace(/[<>&"']/g, '?');
+      let h = 0; for (const ch of nome) h = (h * 31 + ch.charCodeAt(0)) >>> 0;
+      const cor = CORES_LOGO[h % CORES_LOGO.length];
+      const avatar = `<span class="logo-fallback" style="background:${cor}">${letra}</span>`;
+      if (!a.logo_url) return avatar;
+      // Se a imagem falhar, troca pela letra colorida.
+      return `<span class="logo-wrap">${avatar}<img class="logo-img" src="${a.logo_url}" alt="" loading="lazy" referrerpolicy="no-referrer" onerror="this.remove()" /></span>`;
+    }
+
     function formatBRL(v) {
       return new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
     }
@@ -339,7 +363,36 @@
       return origin + root + '/backend/api';
     }
 
+    let opcoesBancoCarregadas = false;
+    async function carregarOpcoesBanco() {
+      if (opcoesBancoCarregadas) return;
+      try {
+        const res = await fetch(_apiBase() + '/pierre/contas.php', { cache: 'no-store' });
+        const json = await res.json();
+        if (!json.success) return;
+        const vistos = new Set();
+        const sel = document.getElementById('a-banco');
+        (json.data.contas || []).forEach((c) => {
+          const banco = c.providerCode || c.connectorName || c.accountName;
+          const credito = String(c.accountType || '').toUpperCase() === 'CREDIT';
+          if (!banco) return;
+          const chave = banco + '|' + (credito ? 'CREDIT' : 'BANK');
+          if (vistos.has(chave)) return;
+          vistos.add(chave);
+          const o = document.createElement('option');
+          o.value = chave;
+          o.textContent = banco + (credito ? ' · cartão de crédito' : ' · conta');
+          sel.appendChild(o);
+        });
+        opcoesBancoCarregadas = true;
+      } catch (_) {
+        // sem contas: segue com "Não sei / outro"
+      }
+    }
+
     function abrirModalAssinatura() {
+      carregarOpcoesBanco();
+      document.getElementById('a-banco').value = '';
       document.getElementById('modal-assinatura').style.display = 'flex';
       document.getElementById('modal-assinatura-msg').textContent = '';
       document.getElementById('a-primeira').value = new Date().toISOString().slice(0, 7);
@@ -403,6 +456,8 @@
             descricao,
             primeira_cobranca_mes: primeira,
             valor,
+            banco: (document.getElementById('a-banco').value.split('|')[0] || ''),
+            conta_tipo: (document.getElementById('a-banco').value.split('|')[1] || ''),
           }),
         });
 
@@ -435,8 +490,8 @@
         if (!json.success) throw new Error(json.message || 'Erro');
 
         await carregarAssinaturas();
-      } catch (_) {
-        await BFApp.modalAlert('Não foi possível atualizar o status da assinatura.', 'Erro');
+      } catch (e) {
+        await BFApp.modalAlert(e.message || 'Não foi possível atualizar o status da assinatura.', 'Erro');
       }
     }
 
@@ -509,9 +564,15 @@
           const isManual = String(a.origem || '') === 'manual';
           card.innerHTML = `
             <div class="assinatura-top">
-              <div>
+              <div class="assinatura-id">
+                ${logoEmpresa(a)}
+                <div>
                 <div class="assinatura-titulo">${a.descricao || 'Assinatura'}</div>
-                <div class="assinatura-conta">${a.conta_nome || (isManual ? 'Assinatura manual' : 'Conta não identificada')}</div>
+                <div class="assinatura-conta" style="display:flex;align-items:center;gap:0.4rem;">
+                  ${a.icone_url ? `<img src="${a.icone_url}" alt="" width="18" height="18" style="border-radius:5px;background:#fff;padding:1px;" loading="lazy" />` : ''}
+                  <span>${a.banco ? 'Cobrada no ' + a.banco + (a.conta_tipo === 'CREDIT' ? ' (cartão)' : '') + (isManual ? ' · manual' : '') : (isManual ? 'Assinatura manual' : (a.conta_nome || 'Conta não identificada'))}</span>
+                </div>
+                </div>
               </div>
               <div class="assinatura-valor">${formatBRL(a.valor)}</div>
             </div>

@@ -23,16 +23,29 @@ const PierreSync = (() => {
    *
    * @param {Function} recarregarFn  - função que (re)carrega os dados da página
    * @param {HTMLElement} [btn]      - botão que disparou a ação (desabilitado durante sync)
+   * @param {{escopo?: 'contas'}} [opcoes] - 'contas' atualiza só saldos e cartões (rápido, sem transações)
    */
-  async function atualizar(recarregarFn, btn) {
+  async function atualizar(recarregarFn, btn, opcoes = {}) {
     if (btn) {
       btn.disabled = true;
       btn.textContent = '⟳ Sincronizando...';
     }
 
+    // Pede aos bancos para atualizarem (a Pierre leva ~12s e termina em segundo plano).
+    // Não esperamos: o clique seguinte já traz os dados novos.
     try {
-      // Força sincronização no Pierre Finance
-      const res  = await fetch(_apiBase() + '/pierre/sincronizar.php', {
+      fetch(_apiBase() + '/pierre/sincronizar.php?somente_bancos=1', {
+        method: 'POST',
+        keepalive: true,
+        cache: 'no-store',
+      }).catch(() => {});
+    } catch (_) {
+      // sem problema: a sincronização abaixo segue normalmente
+    }
+
+    try {
+      // Traz o que a Pierre já tem (rápido)
+      const res  = await fetch(_apiBase() + '/pierre/sincronizar.php' + (opcoes.escopo === 'contas' ? '?escopo=contas' : ''), {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
         // cache: 'no-store' garante que o browser não reutilize resposta antiga

@@ -64,7 +64,7 @@ const UserModel = (() => {
      Comunicação com a API
   ════════════════════════════════════════════ */
 
-  async function register({ name, email, password }) {
+  async function register({ name, email, password, invite_code }) {
     // Validação antes de chamar a API
     const errors = validateRegister({ name, email, password });
     if (hasErrors(errors)) return { success: false, errors };
@@ -73,7 +73,7 @@ const UserModel = (() => {
       const res  = await fetch(`${_apiBase}/register.php`, {
         method:  'POST',
         headers: { 'Content-Type': 'application/json' },
-        body:    JSON.stringify({ name, email, password }),
+        body:    JSON.stringify({ name, email, password, invite_code }),
       });
 
       const json = await res.json();

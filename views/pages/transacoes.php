@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../css/app.css" />
   <script src="../../js/app-runtime.js"></script>
+  <script src="../../js/finance-rules.js?v=20261003c"></script>
   <script src="../../js/pierre-sync.js"></script>
   <style>
     .filters {
@@ -368,15 +369,8 @@
     }
 
     function atualizarResumo(transacoes) {
-      let receita = 0;
-      let despesa = 0;
-
-      transacoes.forEach((tx) => {
-        const tipo = tx.type || (tx.amount >= 0 ? 'CREDIT' : 'DEBIT');
-        const valor = Math.abs(Number(tx.amount) || 0);
-        if (tipo === 'CREDIT') receita += valor;
-        else despesa += valor;
-      });
+      // Ignora pagamento de fatura, aplicações e transferências entre contas próprias.
+      const { receitas: receita, despesas: despesa } = BFFinance.totais(transacoes);
 
       const liquido = receita - despesa;
       document.getElementById('sum-receita').textContent = formatBRL(receita);
@@ -440,7 +434,7 @@
           return;
         }
 
-        const transacoes = json.data.transacoes || [];
+        const transacoes = BFFinance.ordenarRecentes(json.data.transacoes || []);
         atualizarResumo(transacoes);
         document.getElementById('tx-count').textContent = transacoes.length + ' transação(ões)';
         document.getElementById('tx-card').style.display = 'block';
@@ -460,7 +454,7 @@
           const label = tipo === 'CREDIT' ? 'Receita' : 'Despesa';
           const tr = document.createElement('tr');
           tr.innerHTML = `
-            <td data-label="Data">${formatData(tx.date)}</td>
+            <td data-label="Data">${BFFinance.formatarDataHora(tx.date)}</td>
             <td data-label="Descrição">${tx.description || '—'}</td>
             <td data-label="Categoria">
               <select class="tx-cat-select" data-tx-id="${tx.id || ''}">

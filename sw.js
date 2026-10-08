@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'bf-pwa-v3';
+const CACHE_VERSION = 'bf-pwa-v5';
 const CORE_CACHE = [
   './',
   './index.html',

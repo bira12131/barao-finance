@@ -54,7 +54,7 @@
     <!-- Navegação principal -->
     <nav class="sidebar-nav">
 
-      <span class="sidebar-section-label">Menu Principal</span>
+      <span class="sidebar-section-label">Visão geral</span>
 
       <a class="sidebar-nav-item" data-page="pages/dashboard.php" href="#">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -63,6 +63,15 @@
         </svg>
         Dashboard
       </a>
+
+      <a class="sidebar-nav-item" data-page="pages/agenda.php" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+        </svg>
+        Agenda
+      </a>
+
+      <span class="sidebar-section-label" style="margin-top:0.5rem;">Movimentações</span>
 
       <a class="sidebar-nav-item" data-page="pages/transacoes.php" href="#">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -88,22 +97,36 @@
         Cartões
       </a>
 
-      <a class="sidebar-nav-item" data-page="pages/assinaturas.php" href="#">
+      <span class="sidebar-section-label" style="margin-top:0.5rem;">Patrimônio e dívidas</span>
+
+      <a class="sidebar-nav-item" data-page="pages/investimentos.php" href="#">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M20 6L9 17l-5-5"/>
-          <path d="M3 4h18"/>
+          <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
         </svg>
-        Assinaturas
+        Investimentos
       </a>
 
-      <span class="sidebar-section-label" style="margin-top:0.5rem;">Categorias</span>
-
-      <a class="sidebar-nav-item" data-page="pages/categorias-selecao.php" href="#">
+      <a class="sidebar-nav-item" data-page="pages/emprestimos.php" href="#">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <polyline points="9 11 12 14 22 4"/>
-          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+          <rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18"/><circle cx="12" cy="15" r="1.5"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
         </svg>
-        Seleção de categorias
+        Empréstimos
+      </a>
+
+      <span class="sidebar-section-label" style="margin-top:0.5rem;">Planejamento</span>
+
+      <a class="sidebar-nav-item" data-page="pages/assistente.php" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+        </svg>
+        Assistente IA
+      </a>
+
+      <a class="sidebar-nav-item" data-page="pages/metas.php" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>
+        </svg>
+        Metas
       </a>
 
       <a class="sidebar-nav-item" data-page="pages/despesas-previstas.php" href="#">
@@ -113,6 +136,47 @@
           <path d="M9 12h6"/>
         </svg>
         Despesas previstas
+      </a>
+
+      <a class="sidebar-nav-item" data-page="pages/assinaturas.php" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M20 6L9 17l-5-5"/>
+          <path d="M3 4h18"/>
+        </svg>
+        Assinaturas
+      </a>
+
+      <span class="sidebar-section-label" style="margin-top:0.5rem;">Organização</span>
+
+      <a class="sidebar-nav-item" data-page="pages/categorias-selecao.php" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="9 11 12 14 22 4"/>
+          <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+        </svg>
+        Seleção de categorias
+      </a>
+
+      <span class="sidebar-section-label" style="margin-top:0.5rem;">Ferramentas</span>
+
+      <a class="sidebar-nav-item" data-page="pages/senhas.php" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Senhas
+      </a>
+
+      <a class="sidebar-nav-item" data-page="pages/codigos.php" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+        </svg>
+        Códigos
+      </a>
+
+      <a class="sidebar-nav-item" data-page="pages/consulta.php" href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
+        </svg>
+        Consulta VB ⇄ SQL
       </a>
 
       <span class="sidebar-section-label" style="margin-top:0.5rem;">Conta</span>
@@ -216,6 +280,36 @@
 <section id="mobile-more-sheet" class="mobile-more-sheet" aria-label="Mais opções" aria-hidden="true">
   <div class="mobile-more-header">Mais opções</div>
   <div class="mobile-more-list">
+    <a class="mobile-more-item" data-page="pages/agenda.php" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+      </svg>
+      Agenda
+    </a>
+    <a class="mobile-more-item" data-page="pages/assistente.php" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+      </svg>
+      Assistente IA
+    </a>
+    <a class="mobile-more-item" data-page="pages/metas.php" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1"/>
+      </svg>
+      Metas
+    </a>
+    <a class="mobile-more-item" data-page="pages/investimentos.php" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>
+      </svg>
+      Investimentos
+    </a>
+    <a class="mobile-more-item" data-page="pages/emprestimos.php" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="7" width="18" height="12" rx="2"/><path d="M3 11h18"/><circle cx="12" cy="15" r="1.5"/><path d="M8 7V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+      </svg>
+      Empréstimos
+    </a>
     <a class="mobile-more-item" data-page="pages/assinaturas.php" href="#">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <path d="M20 6L9 17l-5-5"></path><path d="M3 4h18"></path>
@@ -237,6 +331,24 @@
       </svg>
       Despesas previstas
     </a>
+    <a class="mobile-more-item" data-page="pages/senhas.php" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+      </svg>
+      Senhas
+    </a>
+    <a class="mobile-more-item" data-page="pages/codigos.php" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+      </svg>
+      Códigos
+    </a>
+    <a class="mobile-more-item" data-page="pages/consulta.php" href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/><path d="M3 12c0 1.66 4 3 9 3s9-1.34 9-3"/>
+      </svg>
+      Consulta VB ⇄ SQL
+    </a>
     <a class="mobile-more-item" data-page="pages/configuracoes.php" href="#">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="3"></circle>
@@ -244,14 +356,6 @@
       </svg>
       Configurações
     </a>
-    <button class="mobile-more-item" type="button" id="btn-logout-mobile">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-        <polyline points="16 17 21 12 16 7"></polyline>
-        <line x1="21" y1="12" x2="9" y2="12"></line>
-      </svg>
-      Sair
-    </button>
   </div>
 </section>
 

@@ -415,11 +415,14 @@
           valor_parcela: valorParcela,
         };
 
-        const method = editingId ? 'PATCH' : 'POST';
-        if (editingId) payload.id = editingId;
+        // O servidor só libera GET/POST: edição vai como POST + _method.
+        if (editingId) {
+          payload.id = editingId;
+          payload._method = 'PATCH';
+        }
 
         const res = await fetch(_apiBase() + '/pierre/despesas_previstas.php', {
-          method,
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify(payload),
         });
@@ -447,6 +450,31 @@
       }
     }
 
+    async function ajustarAssinatura(d, manual) {
+      const ok = await BFApp.modalConfirm(
+        manual
+          ? `Desativar a assinatura "${d.descricao}"? Ela deixa de aparecer nas despesas previstas.`
+          : `Marcar "${d.descricao}" como indevida? Ela não será detectada de novo.`,
+        manual ? 'Desativar assinatura' : 'Assinatura indevida'
+      );
+      if (!ok) return;
+      try {
+        const corpo = manual
+          ? { acao: 'status_manual', id: d.assinatura_id, ativa: false }
+          : { acao: 'indevida', descricao: d.descricao, valor: Number(d.valor_assinatura || d.valor_parcela || 0) };
+        const res = await fetch(_apiBase() + '/pierre/assinaturas.php', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(corpo),
+        });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || 'Erro');
+        await carregar();
+      } catch (e) {
+        await BFApp.modalAlert(e.message || 'Não foi possível atualizar a assinatura.', 'Erro');
+      }
+    }
+
     async function excluirDespesa(id) {
       const confirmou = await BFApp.modalConfirm(
         'Deseja excluir esta despesa prevista?',
@@ -458,9 +486,9 @@
 
       try {
         const res = await fetch(_apiBase() + '/pierre/despesas_previstas.php', {
-          method: 'DELETE',
+          method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ id }),
+          body: JSON.stringify({ id, _method: 'DELETE' }),
         });
 
         const json = await res.json();
@@ -526,6 +554,36 @@
         tr.children[6].setAttribute('data-label', 'Ações');
 
         const actionsWrap = tr.children[6].querySelector('.actions-cell');
+        if (d.origem) {
+          const rotulo = { fatura: 'Fatura do mês', assinatura: 'Assinatura', emprestimo: 'Empréstimo' }[d.origem] || 'Automática';
+          tr.children[0].textContent = '';
+          tr.children[0].appendChild(document.createTextNode((d.descricao || '—') + (d.assinatura_origem === 'manual' ? ' (manual)' : ' (automática)')));
+          tr.children[0].setAttribute('data-label', 'Descrição');
+          tr.children[3].textContent = rotulo;
+          tr.children[5].textContent = '—';
+          if (d.origem === 'assinatura') tr.children[1].textContent = formatDate(d.primeira_cobranca);
+          if (d.incluida_na_fatura) {
+            tr.children[2].textContent = formatBRL(Number(d.valor_parcela || 0)) + ' (na fatura)';
+            totalMesAtual -= Number(d.valor_parcela || 0);
+          }
+
+          const info = document.createElement('span');
+          info.textContent = d.banco ? d.banco : (d.assinatura_origem === 'manual' ? 'Manual' : 'Automático');
+          actionsWrap.appendChild(info);
+
+          // Assinatura que não deveria estar aqui: resolve direto na lista.
+          if (d.origem === 'assinatura' && d.assinatura_id) {
+            const manual = d.assinatura_origem === 'manual';
+            const btn = document.createElement('button');
+            btn.className = 'btn small danger';
+            btn.textContent = manual ? 'Desativar' : 'Indevida';
+            btn.addEventListener('click', () => ajustarAssinatura(d, manual));
+            actionsWrap.appendChild(btn);
+          }
+          tbody.appendChild(tr);
+          return;
+        }
+
         const btnEditar = document.createElement('button');
         btnEditar.className = 'btn small outline';
         btnEditar.textContent = 'Editar';

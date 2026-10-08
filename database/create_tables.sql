@@ -1,6 +1,6 @@
 -- =============================================================
 -- BARÃO FINANCE — Script de criação de tabelas
--- Banco: PostgreSQL 13+  
+-- Banco: PostgreSQL 13+  |  Base: barao_finance
 -- Execute via psql ou pelo gerenciador da KingHost
 -- =============================================================
 
@@ -262,13 +262,13 @@ ALTER TABLE pierre_sincronizacoes ADD COLUMN IF NOT EXISTS user_id UUID REFERENC
 
 -- Backfill legado atual (ambiente com usuário único).
 -- Garante que os registros antigos apareçam após ativar o escopo por usuário.
-UPDATE pierre_contas SET user_id = '<SEU_USER_ID>' WHERE user_id IS NULL;
-UPDATE pierre_transacoes SET user_id = '<SEU_USER_ID>' WHERE user_id IS NULL;
-UPDATE pierre_categorias_custom SET user_id = '<SEU_USER_ID>' WHERE user_id IS NULL;
-UPDATE pierre_despesas_previstas SET user_id = '<SEU_USER_ID>' WHERE user_id IS NULL;
-UPDATE pierre_assinaturas SET user_id = '<SEU_USER_ID>' WHERE user_id IS NULL;
-UPDATE pierre_assinaturas_ignoradas SET user_id = '<SEU_USER_ID>' WHERE user_id IS NULL;
-UPDATE pierre_sincronizacoes SET user_id = '<SEU_USER_ID>' WHERE user_id IS NULL;
+UPDATE pierre_contas SET user_id = '05bc68e7-92b6-422a-88de-d71a0e45319e' WHERE user_id IS NULL;
+UPDATE pierre_transacoes SET user_id = '05bc68e7-92b6-422a-88de-d71a0e45319e' WHERE user_id IS NULL;
+UPDATE pierre_categorias_custom SET user_id = '05bc68e7-92b6-422a-88de-d71a0e45319e' WHERE user_id IS NULL;
+UPDATE pierre_despesas_previstas SET user_id = '05bc68e7-92b6-422a-88de-d71a0e45319e' WHERE user_id IS NULL;
+UPDATE pierre_assinaturas SET user_id = '05bc68e7-92b6-422a-88de-d71a0e45319e' WHERE user_id IS NULL;
+UPDATE pierre_assinaturas_ignoradas SET user_id = '05bc68e7-92b6-422a-88de-d71a0e45319e' WHERE user_id IS NULL;
+UPDATE pierre_sincronizacoes SET user_id = '05bc68e7-92b6-422a-88de-d71a0e45319e' WHERE user_id IS NULL;
 
 -- Deduplicação antes de criar índices únicos por usuário.
 LOCK TABLE pierre_contas IN ACCESS EXCLUSIVE MODE;
@@ -364,3 +364,55 @@ CREATE INDEX IF NOT EXISTS idx_pierre_contas_user ON pierre_contas (user_id);
 CREATE INDEX IF NOT EXISTS idx_pierre_tx_user ON pierre_transacoes (user_id);
 CREATE INDEX IF NOT EXISTS idx_pierre_sync_user ON pierre_sincronizacoes (user_id);
 CREATE INDEX IF NOT EXISTS idx_pierre_despesas_user ON pierre_despesas_previstas (user_id);
+
+-- =============================================================
+-- Tabela: agenda_eventos — compromissos, lembretes e tarefas
+-- (também criada automaticamente por AgendaRepository)
+-- =============================================================
+CREATE TABLE IF NOT EXISTS agenda_eventos (
+    id            UUID         DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id       UUID         NOT NULL,
+    titulo        TEXT         NOT NULL,
+    descricao     TEXT,
+    tipo          VARCHAR(20)  NOT NULL DEFAULT 'compromisso',  -- compromisso | lembrete | tarefa
+    data_inicio   DATE         NOT NULL,
+    hora          TIME,
+    recorrencia   VARCHAR(20)  NOT NULL DEFAULT 'nenhuma',      -- nenhuma | semanal | mensal | anual
+    concluido     BOOLEAN      NOT NULL DEFAULT FALSE,
+    criado_em     TIMESTAMPTZ  DEFAULT NOW(),
+    atualizado_em TIMESTAMPTZ  DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_agenda_user_data ON agenda_eventos (user_id, data_inicio);
+
+-- =============================================================
+-- Metas financeiras (também criadas automaticamente por MetasRepository)
+-- =============================================================
+CREATE TABLE IF NOT EXISTS metas (
+    id            UUID          DEFAULT gen_random_uuid() PRIMARY KEY,
+    user_id       UUID          NOT NULL,
+    nome          TEXT          NOT NULL,
+    componentes   JSONB         NOT NULL DEFAULT '[]'::jsonb,   -- [{nome, valor}]
+    valor_alvo    NUMERIC(15,2) NOT NULL,
+    valor_inicial NUMERIC(15,2) NOT NULL DEFAULT 0,
+    data_alvo     DATE,
+    status        VARCHAR(20)   NOT NULL DEFAULT 'ativa',
+    criado_em     TIMESTAMPTZ   DEFAULT NOW(),
+    atualizado_em TIMESTAMPTZ   DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_metas_user ON metas (user_id);
+
+CREATE TABLE IF NOT EXISTS metas_aportes (
+    id        UUID          DEFAULT gen_random_uuid() PRIMARY KEY,
+    meta_id   UUID          NOT NULL,
+    user_id   UUID          NOT NULL,
+    valor     NUMERIC(15,2) NOT NULL,                           -- negativo = retirada
+    data      DATE          NOT NULL DEFAULT CURRENT_DATE,
+    criado_em TIMESTAMPTZ   DEFAULT NOW()
+);
+CREATE INDEX IF NOT EXISTS idx_metas_aportes_meta ON metas_aportes (meta_id);
+
+CREATE TABLE IF NOT EXISTS perfil_financeiro (
+    user_id       UUID          PRIMARY KEY,
+    renda_mensal  NUMERIC(15,2),
+    atualizado_em TIMESTAMPTZ   DEFAULT NOW()
+);

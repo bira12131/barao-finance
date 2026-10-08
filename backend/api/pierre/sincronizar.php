@@ -3,10 +3,11 @@
  * ENDPOINT — /backend/api/pierre/sincronizar.php
  *
  * Fluxo:
- *  1. Chama POST /manual-update na Pierre Finance (força sync das contas conectadas)
- *  2. Faz syncAll(): busca contas + transações da API e salva no PostgreSQL
- *  3. Detecta assinaturas recorrentes
- *  4. Retorna resumo
+ *  POST                    -> syncAll(): busca contas + transações da Pierre e salva no PostgreSQL
+ *                             (rápido; detecta assinaturas só se houver transação nova)
+ *  POST ?escopo=contas     -> só contas, saldos e cartões (rápido, sem transações)
+ *  POST ?somente_bancos=1  -> pede à Pierre para atualizar os bancos (manual-update, lento,
+ *                             termina em segundo plano; a tela dispara sem esperar)
  */
 
 require_once __DIR__ . '/../../config/cors.php';
@@ -34,13 +35,19 @@ try {
         ], 403);
     }
 
-    $repo   = new PierreRepository($userId);
+    // Pedido de atualização aos bancos: a Pierre leva ~12s só para aceitar e termina em segundo plano.
+    // Por isso roda numa requisição separada (a tela não espera por ela).
+    if (($_GET['somente_bancos'] ?? '') === '1') {
+        ignore_user_abort(true);
+        set_time_limit(90);
+        $pierre->sincronizar();
+        jsonResponse(true, 'Atualização dos bancos solicitada.');
+    }
 
-    // 1. Dispara o manual-update na Pierre Finance (ignora falha — nem sempre necessário)
-    $pierre->sincronizar();
+    $repo = new PierreRepository($userId);
 
-    // 2. Busca todos os dados e salva no banco
-    $resultado = $pierre->syncAll($repo);
+    // Busca contas e transações já disponíveis na Pierre e salva no banco.
+    $resultado = ($_GET['escopo'] ?? '') === 'contas' ? $pierre->syncContas($repo) : $pierre->syncAll($repo);
 
     if (!$resultado['success'] && $resultado['status'] === 'erro') {
         jsonResponse(false, 'Erro ao sincronizar dados.', [

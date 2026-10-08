@@ -4,26 +4,64 @@
  *
  * GET    -> lista despesas previstas
  * POST   -> cadastra despesa prevista
- * PATCH  -> edita despesa prevista
- * DELETE -> exclui despesa prevista
+ * PATCH  -> edita despesa prevista   (ou POST + _method=PATCH)
+ * DELETE -> exclui despesa prevista  (ou POST + _method=DELETE)
  */
 
 require_once __DIR__ . '/../../config/cors.php';
 require_once __DIR__ . '/../../utils/response.php';
 require_once __DIR__ . '/../../utils/auth.php';
 require_once __DIR__ . '/../../repositories/PierreRepository.php';
+require_once __DIR__ . '/../../repositories/EmprestimosRepository.php';
 
 header('Content-Type: application/json');
 header('Cache-Control: no-store, no-cache, must-revalidate');
 
 $metodo = $_SERVER['REQUEST_METHOD'] ?? 'GET';
+
+// O servidor (.htaccess) só libera GET/POST/OPTIONS: PATCH e DELETE chegam via POST + _method.
+if ($metodo === 'POST') {
+    $corpo = json_decode((string)file_get_contents('php://input'), true) ?: [];
+    $override = strtoupper((string)($corpo['_method'] ?? ($_GET['_method'] ?? '')));
+    if (in_array($override, ['PATCH', 'DELETE'], true)) {
+        $metodo = $override;
+    }
+}
+
 $userId = requireAuthenticatedUserId();
 $repo   = new PierreRepository($userId);
 
 if ($metodo === 'GET') {
     $apenasAtivas = !isset($_GET['ativas']) || $_GET['ativas'] !== '0';
     $mesReferencia = trim((string)($_GET['mes_referencia'] ?? ''));
-    $despesas = $repo->getDespesasPrevistas($apenasAtivas, $mesReferencia !== '' ? $mesReferencia : null);
+    $mesFiltro = $mesReferencia !== '' ? $mesReferencia : null;
+    $despesas = $repo->getDespesasPrevistas($apenasAtivas, $mesFiltro);
+
+    // Itens automáticos: faturas de cartão, assinaturas e parcelas de empréstimo (sem cadastro manual).
+    if ($apenasAtivas && ($_GET['faturas'] ?? '1') !== '0') {
+        $mesAuto = $mesFiltro ?? date('Y-m');
+        $automaticas = [];
+
+        try { $automaticas = array_merge($automaticas, $repo->getFaturasComoDespesasPrevistas($mesFiltro)); } catch (\Throwable $e) {}
+        try { $automaticas = array_merge($automaticas, $repo->getAssinaturasComoDespesasPrevistas($mesFiltro)); } catch (\Throwable $e) {}
+        try {
+            foreach ((new EmprestimosRepository($userId))->parcelasDoMes($mesAuto) as $p) {
+                $automaticas[] = [
+                    'id'                    => 'emp:' . $p['id'] . ':' . $mesAuto,
+                    'descricao'             => 'Empréstimo ' . $p['nome'] . ' (parcela ' . $p['parcela'] . '/' . $p['total'] . ')',
+                    'primeira_cobranca'     => $p['data'],
+                    'duracao_meses'         => 1,
+                    'valor_parcela'         => $p['valor'],
+                    'ativa'                 => true,
+                    'encerramento_previsto' => $p['data'],
+                    'origem'                => 'emprestimo',
+                    'somente_leitura'       => true,
+                ];
+            }
+        } catch (\Throwable $e) {}
+
+        $despesas = array_merge($automaticas, $despesas);
+    }
 
     jsonResponse(true, 'Despesas previstas retornadas com sucesso.', [
         'despesas_previstas' => $despesas,

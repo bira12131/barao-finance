@@ -15,6 +15,7 @@ require_once __DIR__ . '/../../utils/response.php';
 require_once __DIR__ . '/../../utils/auth.php';
 require_once __DIR__ . '/../../utils/pierre_guard.php';
 require_once __DIR__ . '/../../repositories/PierreRepository.php';
+require_once __DIR__ . '/../../utils/marcas.php';
 
 header('Content-Type: application/json');
 header('Cache-Control: no-store, no-cache, must-revalidate');
@@ -44,7 +45,11 @@ if ($metodo === 'POST') {
             jsonResponse(false, 'descricao, primeira_cobranca_mes e valor são obrigatórios.', [], 422);
         }
 
-        $ok = $repo->criarAssinaturaManual($descricao, $primeiraCobrancaMes, $valor);
+        $ok = $repo->criarAssinaturaManual(
+            $descricao, $primeiraCobrancaMes, $valor,
+            isset($payload['banco']) ? (string)$payload['banco'] : null,
+            isset($payload['conta_tipo']) ? (string)$payload['conta_tipo'] : null
+        );
         if (!$ok) {
             jsonResponse(false, 'Não foi possível cadastrar assinatura manual.', [], 422);
         }
@@ -128,6 +133,9 @@ $resultado = array_map(function ($a) {
         'categoria'        => $a['categoria'],
         'conta_nome'       => $a['conta_nome'],
         'conta_tipo'       => $a['conta_tipo'],
+        'banco'            => $a['banco'] ?? null,
+        'icone_url'        => $a['icone_url'] ?? null,
+        'logo_url'         => logoDaMarca($a['descricao']),
         'ativa'            => (bool) $a['ativa'],
         'criado_em'        => $a['criado_em'],
         'origem'           => $a['origem'] ?? 'detectada',

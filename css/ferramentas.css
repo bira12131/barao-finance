@@ -1,0 +1,63 @@
+/* Ferramentas (Senhas, Códigos, Consulta VB ⇄ SQL): componentes compartilhados, feitos para o celular primeiro. */
+
+.panel { background: var(--bg-card); border: 1px solid var(--border); border-radius: var(--radius-md); box-shadow: var(--shadow-card); padding: 0.95rem; margin-bottom: 0.9rem; }
+.panel-title { font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: color-mix(in srgb, var(--page-accent) 55%, var(--text-muted)); margin-bottom: 0.6rem; }
+
+.btn { min-height: 44px; padding: 0 1rem; border-radius: var(--radius-sm); border: 1.5px solid var(--primary); background: var(--primary); color: #fff; font-size: 0.86rem; font-weight: 700; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem; text-decoration: none; }
+.btn:disabled { opacity: 0.55; cursor: default; }
+.btn.outline { background: var(--bg-input); color: var(--text-body); border-color: var(--border); }
+.btn.danger { background: var(--danger-light); color: #ff9c9c; border-color: rgba(217, 79, 79, 0.5); }
+.btn.small { min-height: 38px; padding: 0 0.8rem; font-size: 0.8rem; }
+.icon-btn { width: 44px; height: 44px; flex: none; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-input); color: var(--text-body); font-size: 1.05rem; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+
+.field { display: flex; flex-direction: column; gap: 0.3rem; margin-bottom: 0.75rem; min-width: 0; }
+.label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; }
+.input { min-height: 46px; padding: 0 0.75rem; width: 100%; max-width: 100%; box-sizing: border-box; border: 1.5px solid var(--border); border-radius: var(--radius-sm); background: var(--bg-input); color: var(--text-body); font: inherit; font-size: 16px; outline: none; }
+.input:focus { border-color: var(--primary); }
+select.input { appearance: none; -webkit-appearance: none; background-image: linear-gradient(45deg, transparent 50%, var(--text-muted) 50%), linear-gradient(135deg, var(--text-muted) 50%, transparent 50%); background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%; background-size: 5px 5px; background-repeat: no-repeat; padding-right: 2rem; }
+textarea.input { padding: 0.65rem 0.75rem; min-height: 90px; resize: vertical; line-height: 1.45; }
+.mono { font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; }
+textarea.mono { font-size: 14px; white-space: pre; overflow: auto; tab-size: 2; }
+.hint { font-size: 0.74rem; color: var(--text-muted); line-height: 1.45; }
+.note { font-size: 0.78rem; color: var(--text-muted); line-height: 1.5; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.7rem; }
+.linha { display: flex; gap: 0.5rem; align-items: center; }
+.linha > .input { flex: 1; min-width: 0; }
+
+.seg { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; gap: 0.3rem; padding: 0.25rem; margin-bottom: 0.8rem; border-radius: 14px; background: var(--bg-input); border: 1px solid var(--border); }
+.seg button { min-height: 42px; border: none; border-radius: 10px; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 0.82rem; cursor: pointer; padding: 0 0.4rem; }
+.seg button.on { background: var(--primary); color: #fff; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 0.4rem; }
+.chip { font-size: 0.74rem; padding: 0.3rem 0.65rem; border-radius: 99px; background: var(--bg-input); border: 1px solid var(--border); color: var(--text-body); cursor: pointer; white-space: nowrap; }
+.chip.on { background: var(--primary); border-color: var(--primary); color: #fff; }
+.badge { font-size: 0.64rem; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.2rem 0.5rem; border-radius: 99px; background: var(--primary-light); color: var(--page-accent); white-space: nowrap; flex: none; }
+
+.empty { padding: 1.2rem 0.3rem; color: var(--text-muted); font-size: 0.88rem; line-height: 1.5; }
+
+.fab { position: fixed; right: 1.1rem; bottom: 0.9rem; width: 54px; height: 54px; border-radius: 50%; border: none; background: var(--primary); color: #fff; font-size: 1.9rem; line-height: 1; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45); cursor: pointer; z-index: 30; }
+
+.overlay { position: fixed; inset: 0; display: none; align-items: center; justify-content: center; background: rgba(8, 12, 20, 0.7); z-index: 50; padding: 1rem; }
+.overlay.open { display: flex; }
+.sheet { width: 100%; max-width: 560px; max-height: 92vh; overflow-y: auto; background: var(--bg-card); border: 1px solid var(--border); border-radius: 20px; box-shadow: 0 22px 44px rgba(0, 0, 0, 0.5); padding: 1.1rem; }
+.sheet-title { font-size: 1rem; font-weight: 800; color: var(--text-heading); margin-bottom: 0.8rem; }
+.sheet-actions { display: flex; gap: 0.5rem; margin-top: 0.7rem; flex-wrap: wrap; }
+.sheet-actions .btn { flex: 1; min-width: 0; }
+.sheet-msg { min-height: 1rem; margin-top: 0.5rem; font-size: 0.8rem; color: var(--danger); }
+
+.toast { position: fixed; left: 50%; transform: translateX(-50%); bottom: 4.8rem; z-index: 60; max-width: calc(100% - 2rem); padding: 0.65rem 0.95rem; border-radius: 12px; background: var(--bg-card); border: 1.5px solid var(--border); color: var(--text-heading); font-size: 0.82rem; line-height: 1.4; box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45); text-align: center; }
+.toast.ok { border-color: var(--success); }
+.toast.erro { border-color: var(--danger); }
+
+.forca { height: 6px; border-radius: 99px; background: var(--bg-input); overflow: hidden; margin-top: 0.35rem; }
+.forca > i { display: block; height: 100%; border-radius: 99px; width: 0; transition: width 0.15s, background 0.15s; }
+
+@media (max-width: 640px) {
+  .inner-page { padding: 1rem 0.85rem; padding-bottom: 5.8rem; }
+  .overlay { align-items: flex-end; padding: 0; }
+  .sheet { max-width: none; border-radius: 22px 22px 0 0; padding-bottom: 1.2rem; }
+}
+@media (min-width: 900px) {
+  .fab { bottom: 1.6rem; right: 2rem; }
+  .toast { bottom: 1.8rem; }
+}

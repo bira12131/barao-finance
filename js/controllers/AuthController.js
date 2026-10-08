@@ -200,6 +200,7 @@ const AuthController = (() => {
         name:     nameIn.value,
         email:    emailIn.value,
         password: passIn.value,
+        invite_code: (document.getElementById('invite-code')?.value || '').trim(),
       };
 
       const errors = UserModel.validateRegister(data);
@@ -227,6 +228,8 @@ const AuthController = (() => {
       if (!result.success) {
         if (result.errors.email) {
           _setFieldError(emailIn, emailErr, result.errors.email);
+        } else if (result.errors.invite_code) {
+          _showAlert(alertEl, result.errors.invite_code);
         } else {
           _showAlert(alertEl, 'Erro ao criar conta. Tente novamente.');
         }

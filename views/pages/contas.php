@@ -77,7 +77,7 @@
       <p>Suas contas bancárias conectadas</p>
     </div>
     <div class="page-header-actions">
-      <button class="btn-sync secondary" id="btn-sync" onclick="PierreSync.atualizar(carregarContas, this)">↻ Atualizar</button>
+      <button class="btn-sync secondary" id="btn-sync" onclick="PierreSync.atualizar(carregarContas, this, { escopo: 'contas' })">↻ Atualizar</button>
     </div>
   </div>
 

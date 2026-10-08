@@ -31,6 +31,17 @@ class AuthController
         $name     = trim($body['name']     ?? '');
         $email    = trim(strtolower($body['email']    ?? ''));
         $password = $body['password'] ?? '';
+        $convite  = is_string($body['invite_code'] ?? null) ? trim($body['invite_code']) : '';
+
+        // ── Cadastro fechado: exige código de convite definido no servidor ──
+        $cfg    = @include __DIR__ . '/../config/registro.php';
+        $codigo = is_array($cfg) ? (string)($cfg['codigo_convite'] ?? '') : '';
+        if ($codigo === '' || !hash_equals($codigo, $convite)) {
+            usleep(500000); // desacelera tentativa de adivinhar o código
+            jsonResponse(false, 'Cadastro por convite. Informe um código de convite válido.', [
+                'errors' => ['invite_code' => 'Código de convite inválido ou cadastro fechado.'],
+            ], 403);
+        }
 
         // ── Validação ───────────────────────────
         $errors = [];
@@ -101,6 +112,7 @@ class AuthController
 
         // Sessão server-side para identificar o usuário em todos os endpoints Pierre
         startAppSession();
+        session_regenerate_id(true); // evita fixação de sessão
         $_SESSION['user_id'] = $user['id'];
         $_SESSION['user_email'] = $user['email'];
         $_SESSION['user_name'] = $user['nome'];

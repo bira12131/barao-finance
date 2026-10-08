@@ -87,6 +87,56 @@
     .loading-state { display: flex; align-items: center; gap: 8px; color: var(--text-muted); font-size: 0.875rem; padding: 2rem; }
     .spinner { width: 18px; height: 18px; border: 2px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
+    .btn-fatura {
+      margin-top: 0.7rem;
+      width: 100%;
+      min-height: 44px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--primary);
+      background: transparent;
+      color: var(--primary);
+      font-weight: 700;
+      font-size: 0.86rem;
+      cursor: pointer;
+    }
+    .fx-overlay {
+      position: fixed; inset: 0; z-index: 50; display: none;
+      align-items: center; justify-content: center;
+      background: rgba(8, 12, 20, 0.7); padding: 1rem;
+    }
+    .fx-overlay.open { display: flex; }
+    .fx-sheet {
+      width: 100%; max-width: 620px; max-height: 92vh; overflow-y: auto;
+      background: var(--bg-card); border: 1px solid var(--border);
+      border-radius: 20px; box-shadow: 0 22px 44px rgba(0,0,0,0.5); padding: 1.1rem;
+    }
+    .fx-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 0.6rem; margin-bottom: 0.7rem; }
+    .fx-title { font-size: 1rem; font-weight: 800; color: var(--text-heading); }
+    .fx-sub { font-size: 0.76rem; color: var(--text-muted); margin-top: 0.15rem; }
+    .fx-close { width: 40px; height: 40px; border-radius: 12px; border: 1.5px solid var(--border); background: var(--bg-input); color: var(--text-body); font-size: 1.1rem; cursor: pointer; flex: none; }
+    .fx-seg { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.3rem; padding: 0.25rem; margin-bottom: 0.8rem; border-radius: 14px; background: var(--bg-input); border: 1px solid var(--border); }
+    .fx-seg button { min-height: 40px; border: none; border-radius: 10px; background: transparent; color: var(--text-muted); font-weight: 700; font-size: 0.84rem; cursor: pointer; }
+    .fx-seg button.on { background: var(--primary); color: #fff; }
+    .fx-sum { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.5rem; margin-bottom: 0.9rem; }
+    .fx-sum div { background: var(--bg-input); border: 1px solid var(--border); border-radius: 12px; padding: 0.55rem 0.65rem; }
+    .fx-sum small { display: block; font-size: 0.62rem; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text-muted); font-weight: 700; }
+    .fx-sum b { font-size: 0.92rem; color: var(--text-heading); }
+    .fx-h { margin: 0.9rem 0 0.4rem; font-size: 0.74rem; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+    .fx-cat { display: flex; justify-content: space-between; font-size: 0.84rem; padding: 0.3rem 0; border-bottom: 1px solid var(--border); color: var(--text-body); }
+    .fx-cat b { color: var(--text-heading); }
+    .fx-item { display: flex; align-items: center; gap: 0.7rem; padding: 0.6rem 0; border-bottom: 1px solid var(--border); }
+    .fx-item-data { min-width: 2.6rem; font-size: 0.75rem; font-weight: 700; color: var(--text-muted); }
+    .fx-item-main { flex: 1; min-width: 0; }
+    .fx-item-desc { font-size: 0.88rem; font-weight: 600; color: var(--text-heading); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .fx-item-cat { font-size: 0.72rem; color: var(--text-muted); }
+    .fx-item-val { font-size: 0.88rem; font-weight: 800; color: var(--text-heading); white-space: nowrap; }
+    .fx-item-val.credito { color: var(--success); }
+    .fx-empty { padding: 1rem 0.2rem; color: var(--text-muted); font-size: 0.86rem; }
+    @media (max-width: 640px) {
+      .fx-overlay { align-items: flex-end; padding: 0; }
+      .fx-sheet { max-width: none; border-radius: 22px 22px 0 0; padding-bottom: 1.2rem; }
+      .fx-sum { grid-template-columns: 1fr 1fr 1fr; }
+    }
   </style>
 </head>
 <body class="inner-page">
@@ -123,6 +173,24 @@
     </svg>
     <strong>Erro ao carregar cartões</strong>
     <p id="cartoes-erro-msg"></p>
+  </div>
+
+  <div class="fx-overlay" id="fx-overlay">
+    <div class="fx-sheet" role="dialog" aria-modal="true" aria-labelledby="fx-title">
+      <div class="fx-head">
+        <div>
+          <div class="fx-title" id="fx-title">Fatura</div>
+          <div class="fx-sub" id="fx-sub"></div>
+        </div>
+        <button type="button" class="fx-close" id="fx-close" aria-label="Fechar"><i data-icone="x"></i></button>
+      </div>
+      <div class="fx-seg">
+        <button type="button" id="fx-atual" class="on">Atual</button>
+        <button type="button" id="fx-proxima">Próxima</button>
+        <button type="button" id="fx-anterior">Anterior</button>
+      </div>
+      <div id="fx-body"></div>
+    </div>
   </div>
 
   <script>
@@ -214,8 +282,8 @@
               <div class="cartao-numero">•••• •••• •••• ••••</div>
               <div class="cartao-footer">
                 <div>
-                  <div class="cartao-label">Titular</div>
-                  <div class="cartao-value">${c.accountMarketingName || c.accountName}</div>
+                  <div class="cartao-label">Cartão</div>
+                  <div class="cartao-value">${[c.providerCode, c.accountMarketingName || c.accountName].filter(Boolean).join(' ')}</div>
                 </div>
                 <div style="text-align:right">
                   <div class="cartao-label">Vencimento</div>
@@ -242,6 +310,12 @@
               </div>
             </div>
           `;
+          const btnFatura = document.createElement('button');
+          btnFatura.type = 'button';
+          btnFatura.className = 'btn-fatura';
+          btnFatura.textContent = 'Ver itens da fatura';
+          btnFatura.addEventListener('click', () => abrirFatura(c.id || c.accountId, c.accountMarketingName || c.accountName));
+          wrapper.querySelector('.cartao-info').appendChild(btnFatura);
           grid.appendChild(wrapper);
         });
         grid.style.display = 'grid';
@@ -251,6 +325,150 @@
         document.getElementById('cartoes-erro').style.display = 'flex';
       }
     }
+
+    // ── Itens da fatura ──────────────────────────────────────────
+    let fxContaId = null;
+    let fxPeriodo = 'atual';
+    const fxEl = (id) => document.getElementById(id);
+
+    function fxData(d) {
+      const [y, m, dia] = String(d).slice(0, 10).split('-');
+      return `${dia}/${m}`;
+    }
+
+    function fxLinha(rotulo, valor) {
+      const row = document.createElement('div');
+      row.className = 'fx-cat';
+      const a = document.createElement('span');
+      a.textContent = rotulo;
+      const b = document.createElement('b');
+      b.textContent = valor;
+      row.append(a, b);
+      return row;
+    }
+
+    async function carregarFatura() {
+      const body = fxEl('fx-body');
+      body.textContent = 'Carregando…';
+      ['atual', 'proxima', 'anterior'].forEach((p) => fxEl('fx-' + p).classList.toggle('on', fxPeriodo === p));
+
+      try {
+        const url = new URL(_apiBase() + '/pierre/fatura.php');
+        url.searchParams.set('conta_id', fxContaId);
+        url.searchParams.set('periodo', fxPeriodo);
+        const res = await fetch(url.toString(), { cache: 'no-store' });
+        const json = await res.json();
+        if (!json.success) throw new Error(json.message || 'Erro ao carregar a fatura.');
+        const f = json.data.fatura;
+
+        if (f.modo === 'ciclo') {
+          const rot = { atual: 'Fatura atual', proxima: 'Próxima fatura', anterior: 'Fatura anterior' }[f.periodo];
+          fxEl('fx-sub').textContent = `${rot} · ${f.fechada ? 'fechou' : 'fecha'} em ${formatData(f.fechamento)} · vence em ${formatData(f.vencimento)}`;
+        } else {
+          const [fy, fm] = f.mes_fatura.split('-');
+          const mesNome = new Date(Number(fy), Number(fm) - 1, 1).toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' });
+          fxEl('fx-sub').textContent = 'Fatura de ' + mesNome + (f.vencimento ? ' · vence em ' + formatData(f.vencimento) : '');
+        }
+        body.textContent = '';
+
+        const nota = (texto, aviso) => {
+          const n = document.createElement('div');
+          n.className = 'fx-empty';
+          n.textContent = texto;
+          if (aviso) n.style.color = 'var(--warning)';
+          body.appendChild(n);
+        };
+
+        if (f.modo === 'ciclo') {
+          const r = f.resumo_cartao;
+          nota(`Total usado no cartão: ${formatBRL(r.saldo)} = fatura ${r.fechada ? 'fechada' : 'atual'} ${formatBRL(r.atual)}` + (r.proxima > 0 ? ` + próxima fatura ${formatBRL(r.proxima)}.` : '.'));
+          nota(`Fecha todo dia ${f.dia_fechamento}. Compra feita no dia do fechamento ou depois já entra na fatura seguinte.`);
+        }
+
+        const sum = document.createElement('div');
+        sum.className = 'fx-sum';
+        [['Compras', f.total_compras], ['Créditos', f.total_creditos], ['Líquido', f.total_liquido]].forEach(([l, v]) => {
+          const d = document.createElement('div');
+          const sm = document.createElement('small');
+          sm.textContent = l;
+          const b = document.createElement('b');
+          b.textContent = formatBRL(v);
+          d.append(sm, b);
+          sum.appendChild(d);
+        });
+        body.appendChild(sum);
+
+        const totalOficial = f.modo === 'ciclo' ? f.total_fatura : f.fatura_atual;
+        if (totalOficial !== null && f.nao_detalhado > 0.5) {
+          nota(`Total desta fatura: ${formatBRL(totalOficial)}. Itens detalhados: ${formatBRL(f.total_liquido)}. Faltam ${formatBRL(f.nao_detalhado)} que o banco não lista item a item (em geral juros, saldo de fatura anterior ou compras que ele ainda não liberou).`, true);
+        }
+
+        if (!f.itens.length) {
+          const e = document.createElement('div');
+          e.className = 'fx-empty';
+          e.textContent = 'Nenhum lançamento nesta fatura. Toque em "Atualizar" no topo da tela para sincronizar.';
+          body.appendChild(e);
+          return;
+        }
+
+        if (f.por_categoria.length) {
+          const h = document.createElement('div');
+          h.className = 'fx-h';
+          h.textContent = 'Onde foi o dinheiro';
+          body.appendChild(h);
+          f.por_categoria.slice(0, 6).forEach((c) => body.appendChild(fxLinha(c.categoria, formatBRL(c.valor))));
+        }
+
+        const h2 = document.createElement('div');
+        h2.className = 'fx-h';
+        h2.textContent = `Lançamentos (${f.itens.length})`;
+        body.appendChild(h2);
+
+        f.itens.forEach((it) => {
+          const row = document.createElement('div');
+          row.className = 'fx-item';
+          const data = document.createElement('span');
+          data.className = 'fx-item-data';
+          data.textContent = fxData(it.data);
+          if (it.hora_ts) {
+            const h = new Date(it.hora_ts).toLocaleTimeString('pt-BR', { timeZone: 'America/Sao_Paulo', hour: '2-digit', minute: '2-digit' });
+            if (h !== '00:00') data.title = 'Registrada às ' + h;
+          }
+          const main = document.createElement('div');
+          main.className = 'fx-item-main';
+          const desc = document.createElement('div');
+          desc.className = 'fx-item-desc';
+          desc.textContent = it.descricao;
+          const cat = document.createElement('div');
+          cat.className = 'fx-item-cat';
+          cat.textContent = it.categoria || 'Sem categoria';
+          main.append(desc, cat);
+          const val = document.createElement('span');
+          const credito = it.tipo !== 'DEBIT';
+          val.className = 'fx-item-val' + (credito ? ' credito' : '');
+          val.textContent = (credito ? '+ ' : '') + formatBRL(Math.abs(it.valor));
+          if (it.parcela && it.total_parcelas) cat.textContent += ` · parcela ${it.parcela}/${it.total_parcelas}`;
+          if (it.de_mes_anterior) cat.textContent += ' · encargo do mês anterior';
+          if (it.fonte === 'data') cat.textContent += ' · fatura definida pela data (o banco ainda não confirmou)';
+          row.append(data, main, val);
+          body.appendChild(row);
+        });
+      } catch (e) {
+        body.textContent = e.message || 'Erro ao carregar a fatura.';
+      }
+    }
+
+    function abrirFatura(contaId, nome) {
+      fxContaId = contaId;
+      fxPeriodo = 'atual';
+      fxEl('fx-title').textContent = 'Fatura · ' + (nome || 'Cartão');
+      fxEl('fx-overlay').classList.add('open');
+      carregarFatura();
+    }
+
+    fxEl('fx-close').addEventListener('click', () => fxEl('fx-overlay').classList.remove('open'));
+    fxEl('fx-overlay').addEventListener('click', (e) => { if (e.target === fxEl('fx-overlay')) fxEl('fx-overlay').classList.remove('open'); });
+    ['atual', 'proxima', 'anterior'].forEach((p) => fxEl('fx-' + p).addEventListener('click', () => { fxPeriodo = p; carregarFatura(); }));
 
     carregarCartoes();
   </script>

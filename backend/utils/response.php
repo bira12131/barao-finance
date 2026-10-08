@@ -3,6 +3,9 @@
  * Utilitário de resposta JSON padronizada.
  */
 
+// Todo o app trabalha em horário de Brasília. Sem isso, um servidor em UTC vira o "hoje" às 21h.
+date_default_timezone_set('America/Sao_Paulo');
+
 /**
  * Envia resposta JSON e encerra a execução.
  *

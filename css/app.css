@@ -127,6 +127,8 @@ body:not(.inner-page) {
 /* Navegação */
 .sidebar-nav {
   flex: 1;
+  min-height: 0;
+  overflow-y: auto;
   padding: 0.875rem 0.7rem;
   display: flex;
   flex-direction: column;
@@ -631,6 +633,30 @@ body.inner-page {
   --primary-light: #163329;
   --page-accent: #33b178;
   --page-accent-soft: rgba(51, 177, 120, 0.2);
+}
+
+.inner-page.tone-agenda {
+  --primary: #7a6cf0;
+  --primary-dark: #6557d6;
+  --primary-light: #231f45;
+  --page-accent: #8b7fff;
+  --page-accent-soft: rgba(139, 127, 255, 0.2);
+}
+
+.inner-page.tone-metas {
+  --primary: #2a9d8f;
+  --primary-dark: #228377;
+  --primary-light: #14302d;
+  --page-accent: #35b8a8;
+  --page-accent-soft: rgba(53, 184, 168, 0.2);
+}
+
+.inner-page.tone-ferramentas {
+  --primary: #3d8bd9;
+  --primary-dark: #2f74bb;
+  --primary-light: #14293f;
+  --page-accent: #58a6ee;
+  --page-accent-soft: rgba(88, 166, 238, 0.2);
 }
 
 .inner-page.tone-transacoes {
@@ -1159,3 +1185,62 @@ table.data-table tbody tr:hover td {
     flex: 1;
   }
 }
+
+
+/* =============================================
+   Formulários em folhas (bottom sheet) e modais no celular
+   - data/hora/mês do iOS têm largura própria e estouravam a tela
+   - itens de grade precisam de min-width:0 para não empurrar a coluna
+   ============================================= */
+.sheet input[type="date"], .sheet input[type="time"], .sheet input[type="month"],
+.modal-card input[type="date"], .modal-card input[type="time"], .modal-card input[type="month"] {
+  -webkit-appearance: none;
+  appearance: none;
+  display: block;
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+  min-height: 44px;
+  text-align: left;
+}
+
+.sheet input::-webkit-date-and-time-value,
+.modal-card input::-webkit-date-and-time-value {
+  text-align: left;
+  margin: 0;
+  min-height: 1.2em;
+}
+
+.sheet, .modal-card { max-width: 100%; box-sizing: border-box; }
+.sheet .grid > *, .sheet .row2 > *, .sheet .field,
+.modal-card .grid > *, .modal-card .modal-grid > *, .modal-card .modal-field { min-width: 0; }
+.sheet .input, .sheet select, .modal-card .modal-input, .modal-card .input, .modal-card select { max-width: 100%; box-sizing: border-box; }
+
+@media (max-width: 640px) {
+  .sheet, .modal-card { overflow-x: hidden; }
+}
+
+/* Modais antigos (assinaturas, despesas previstas) viram folha de baixo no celular, como as telas novas */
+.modal-card { max-height: 92vh; overflow-y: auto; }
+@media (max-width: 640px) {
+  .modal-overlay { align-items: flex-end !important; padding: 0 !important; }
+  .modal-card {
+    max-width: none !important;
+    width: 100% !important;
+    border-radius: 20px 20px 0 0 !important;
+    padding-bottom: 1.2rem !important;
+  }
+}
+
+/* Ícones de traço fino (js/icones.js): herdam a cor do texto, como os do menu lateral */
+.ico { width: 1.15em; height: 1.15em; flex: none; vertical-align: -0.2em; }
+.btn .ico { width: 18px; height: 18px; vertical-align: middle; }
+.icon-btn .ico, .fx-close .ico, .estrela .ico { width: 20px; height: 20px; }
+.estrela .ico { width: 22px; }
+.estrela.on .ico { fill: currentColor; }
+.chip .ico { width: 14px; height: 14px; vertical-align: -0.15em; margin-right: 0.25rem; }
+.icon-btn, .fx-close { display: inline-flex; align-items: center; justify-content: center; }
+.chip-x, .comp-row .rm, .check { display: inline-flex; align-items: center; justify-content: center; }
+.check .ico { width: 14px; height: 14px; color: #fff; }
+.chip-x .ico { width: 14px; height: 14px; }

@@ -9,6 +9,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="../../css/app.css" />
   <script src="../../js/app-runtime.js"></script>
+  <script src="../../js/finance-rules.js?v=20261003c"></script>
   <script src="../../js/pierre-sync.js"></script>
   <style>
     .nb-summary {
@@ -222,6 +223,15 @@
     </div>
   </div>
 
+  <div class="card nb-summary" id="card-hoje" style="cursor:pointer" role="button" tabindex="0" aria-label="Abrir assistente">
+    <div class="nb-summary-top">
+      <span class="nb-summary-title">Posso gastar hoje</span>
+      <span class="nb-feed-sub">Assistente IA ›</span>
+    </div>
+    <div class="nb-summary-value" id="hoje-valor">R$ —</div>
+    <div class="nb-feed-sub" id="hoje-sub"></div>
+  </div>
+
   <div class="card nb-summary">
     <div class="nb-summary-top">
       <span class="nb-summary-title">Resumo do mês atual</span>
@@ -368,6 +378,29 @@
       window.location.href = page;
     }
 
+    // ── Quanto posso gastar hoje (assistente) ─────────────────────
+    async function carregarHoje() {
+      try {
+        const res = await fetch(_apiBase() + '/assistente.php', { cache: 'no-store' });
+        const json = await res.json();
+        if (!json.success) return;
+        const o = json.data.orcamento;
+        const brlTxt = (v) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(v || 0);
+        if (!o.renda_definida) {
+          document.getElementById('hoje-valor').textContent = 'R$ —';
+          document.getElementById('hoje-sub').textContent = 'Informe sua renda em Metas para calcular.';
+          return;
+        }
+        document.getElementById('hoje-valor').textContent = brlTxt(Math.max(0, o.sobra_hoje));
+        document.getElementById('hoje-sub').textContent =
+          `Limite de ${brlTxt(o.limite_por_dia)}/dia · ${brlTxt(o.gasto_mes)} de ${brlTxt(o.teto_mes)} no mês`;
+      } catch (_) {}
+    }
+    const cardHoje = document.getElementById('card-hoje');
+    cardHoje.addEventListener('click', () => abrirPagina('pages/assistente.php'));
+    cardHoje.addEventListener('keydown', (e) => { if (e.key === 'Enter') abrirPagina('pages/assistente.php'); });
+    carregarHoje();
+
     // ── Transações do mês ─────────────────────────────────────────
     async function carregarTransacoes() {
       const agora  = new Date();
@@ -379,15 +412,9 @@
         const json = await res.json();
         if (!json.success) return;
 
-        const txs      = json.data.transacoes || [];
-        let receitas   = 0;
-        let despesas   = 0;
-
-        txs.forEach(tx => {
-          const tipo = tx.type || (tx.amount >= 0 ? 'CREDIT' : 'DEBIT');
-          if (tipo === 'CREDIT') receitas += Math.abs(tx.amount);
-          else                   despesas += Math.abs(tx.amount);
-        });
+        const txs      = BFFinance.ordenarRecentes(json.data.transacoes || []);
+        // Ignora pagamento de fatura, aplicações e transferências entre contas próprias.
+        const { receitas, despesas } = BFFinance.totais(txs);
 
         document.getElementById('receitas-mes').textContent = formatBRL(receitas);
         document.getElementById('despesas-mes').textContent = formatBRL(despesas);
@@ -428,7 +455,7 @@
                 <span class="nb-feed-icon ${isCredit ? '' : 'debit'}">${isCredit ? '+' : '-'}</span>
                 <div class="nb-feed-text">
                   <div class="nb-feed-desc">${abreviarTexto(tx.description || 'Transação')}</div>
-                  <div class="nb-feed-meta">${formatData(tx.date)} · ${tx.category || 'Sem categoria'} · ${tx.account_name || 'Conta'}</div>
+                  <div class="nb-feed-meta">${BFFinance.formatarDataHora(tx.date)} · ${tx.category || 'Sem categoria'} · ${tx.account_name || 'Conta'}</div>
                 </div>
               </div>
               <div class="nb-feed-value ${isCredit ? 'credit' : 'debit'}">${sinal} ${formatBRL(Math.abs(tx.amount))}</div>
